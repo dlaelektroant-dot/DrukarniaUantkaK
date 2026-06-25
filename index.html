@@ -3,10 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <title>Koszyk</title>
+
+<style>
+    body {
+        font-family: Arial;
+        background: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .logo {
+        width: 180px;
+        display: block;
+        margin: 0 auto 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .item {
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .item-name {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .item-price {
+        color: #444;
+        margin-top: 5px;
+    }
+
+    .remove-btn {
+        background: #ff4d4d;
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .remove-btn:hover {
+        background: #e60000;
+    }
+
+    .empty {
+        text-align: center;
+        font-size: 20px;
+        margin-top: 40px;
+        color: #666;
+    }
+</style>
 </head>
 <body>
 
-<img src="logo.png" width="200">
+<img src="logo.png" class="logo">
 
 <h1>Twój koszyk</h1>
 
@@ -29,14 +91,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// --- UNIKALNY KOSZYK DLA KAŻDEGO UŻYTKOWNIKA ---
+let deviceId = localStorage.getItem("deviceId");
+if (!deviceId) {
+    deviceId = "dev_" + Math.random().toString(36).substring(2);
+    localStorage.setItem("deviceId", deviceId);
+}
+
 async function pobierzKoszyk() {
-    const ref = doc(db, "koszyki", "antek");
+    const ref = doc(db, "koszyki", deviceId);
     const snap = await getDoc(ref);
     return snap.exists() ? snap.data().items : [];
 }
 
 async function zapiszKoszyk(items) {
-    const ref = doc(db, "koszyki", "antek");
+    const ref = doc(db, "koszyki", deviceId);
     await setDoc(ref, { items });
 }
 
@@ -52,13 +121,21 @@ async function wyswietl() {
     const div = document.getElementById("koszyk");
 
     if (koszyk.length === 0) {
-        div.innerHTML = "Koszyk jest pusty";
+        div.innerHTML = `<div class="empty">Koszyk jest pusty</div>`;
         return;
     }
 
     div.innerHTML = koszyk
-        .map((p, i) => `${p.nazwa} — ${p.cena} zł <button onclick="usun(${i})">Usuń</button>`)
-        .join("<br>");
+        .map((p, i) => `
+            <div class="item">
+                <div>
+                    <div class="item-name">${p.nazwa}</div>
+                    <div class="item-price">${p.cena} zł</div>
+                </div>
+                <button class="remove-btn" onclick="usun(${i})">Usuń</button>
+            </div>
+        `)
+        .join("");
 }
 
 window.usun = usun;
