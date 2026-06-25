@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Koszyk</title>
+</head>
+<body>
+
+<img src="logo.png" width="200">
+
+<h1>Twój koszyk</h1>
+
+<div id="koszyk"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCh1XEeQ_ph_CSYUAOqpn-xqsMOvs7dH18",
+  authDomain: "drukarnia-u-antka.firebaseapp.com",
+  projectId: "drukarnia-u-antka",
+  storageBucket: "drukarnia-u-antka.firebasestorage.app",
+  messagingSenderId: "873634293320",
+  appId: "1:873634293320:web:4e30a02a2358d7c99a1a7d",
+  measurementId: "G-T78HJDVBZB"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function pobierzKoszyk() {
+    const ref = doc(db, "koszyki", "antek");
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().items : [];
+}
+
+async function zapiszKoszyk(items) {
+    const ref = doc(db, "koszyki", "antek");
+    await setDoc(ref, { items });
+}
+
+async function usun(index) {
+    const koszyk = await pobierzKoszyk();
+    koszyk.splice(index, 1);
+    await zapiszKoszyk(koszyk);
+    location.reload();
+}
+
+async function wyswietl() {
+    const koszyk = await pobierzKoszyk();
+    const div = document.getElementById("koszyk");
+
+    if (koszyk.length === 0) {
+        div.innerHTML = "Koszyk jest pusty";
+        return;
+    }
+
+    div.innerHTML = koszyk
+        .map((p, i) => `${p.nazwa} — ${p.cena} zł <button onclick="usun(${i})">Usuń</button>`)
+        .join("<br>");
+}
+
+window.usun = usun;
+wyswietl();
+</script>
+
+</body>
+</html>
