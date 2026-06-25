@@ -5,65 +5,72 @@
 <title>Koszyk</title>
 
 <style>
-    body {
-        font-family: Arial;
-        background: #f2f2f2;
-        margin: 0;
-        padding: 20px;
-    }
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 20px;
+}
 
-    .logo {
-        width: 180px;
-        display: block;
-        margin: 0 auto 20px;
-    }
+.logo {
+    width: 180px;
+    display: block;
+    margin: 0 auto 20px;
+}
 
-    h1 {
-        text-align: center;
-        margin-bottom: 30px;
-    }
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
 
-    .item {
-        background: white;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 12px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    .item-name {
-        font-size: 18px;
-        font-weight: bold;
-    }
+.item-name {
+    font-size: 18px;
+    font-weight: bold;
+}
 
-    .item-price {
-        color: #444;
-        margin-top: 5px;
-    }
+.item-price {
+    color: #444;
+    margin-top: 5px;
+}
 
-    .remove-btn {
-        background: #ff4d4d;
-        border: none;
-        color: white;
-        padding: 10px 15px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-    }
+.remove-btn {
+    background: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
 
-    .remove-btn:hover {
-        background: #e60000;
-    }
+.remove-btn:hover {
+    background: #e60000;
+}
 
-    .empty {
-        text-align: center;
-        font-size: 20px;
-        margin-top: 40px;
-        color: #666;
-    }
+.empty {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 40px;
+    color: #666;
+}
+
+.total {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
@@ -73,11 +80,13 @@
 <h1>Twój koszyk</h1>
 
 <div id="koszyk"></div>
+<div id="suma" class="total"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+/* ======== FIREBASE CONFIG ======== */
 const firebaseConfig = {
   apiKey: "AIzaSyCh1XEeQ_ph_CSYUAOqpn-xqsMOvs7dH18",
   authDomain: "drukarnia-u-antka.firebaseapp.com",
@@ -91,12 +100,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- UNIKALNY KOSZYK DLA KAŻDEGO UŻYTKOWNIKA ---
+/* ======== UNIKALNY KOSZYK DLA KAŻDEGO UŻYTKOWNIKA ======== */
 let deviceId = localStorage.getItem("deviceId");
 if (!deviceId) {
     deviceId = "dev_" + Math.random().toString(36).substring(2);
     localStorage.setItem("deviceId", deviceId);
 }
+
+/* ======== FUNKCJE KOSZYKA ======== */
 
 async function pobierzKoszyk() {
     const ref = doc(db, "koszyki", deviceId);
@@ -109,37 +120,45 @@ async function zapiszKoszyk(items) {
     await setDoc(ref, { items });
 }
 
-async function usun(index) {
+window.usun = async function(i) {
     const koszyk = await pobierzKoszyk();
-    koszyk.splice(index, 1);
+    koszyk.splice(i, 1);
     await zapiszKoszyk(koszyk);
     location.reload();
-}
+};
 
-async function wyswietl() {
+async function wyswietlKoszyk() {
     const koszyk = await pobierzKoszyk();
     const div = document.getElementById("koszyk");
+    const sumaDiv = document.getElementById("suma");
 
     if (koszyk.length === 0) {
         div.innerHTML = `<div class="empty">Koszyk jest pusty</div>`;
+        sumaDiv.innerHTML = "";
         return;
     }
 
+    let suma = 0;
+
     div.innerHTML = koszyk
-        .map((p, i) => `
-            <div class="item">
-                <div>
-                    <div class="item-name">${p.nazwa}</div>
-                    <div class="item-price">${p.cena} zł</div>
+        .map((p, i) => {
+            suma += p.cena;
+            return `
+                <div class="item">
+                    <div>
+                        <div class="item-name">${p.nazwa}</div>
+                        <div class="item-price">${p.cena} zł</div>
+                    </div>
+                    <button class="remove-btn" onclick="usun(${i})">Usuń</button>
                 </div>
-                <button class="remove-btn" onclick="usun(${i})">Usuń</button>
-            </div>
-        `)
+            `;
+        })
         .join("");
+
+    sumaDiv.innerHTML = `Suma: ${suma} zł`;
 }
 
-window.usun = usun;
-wyswietl();
+wyswietlKoszyk();
 </script>
 
 </body>
