@@ -1,92 +1,283 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Koszyk</title>
+<title>Koszyk – Drukarnia u Antka</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root {
+    --bg: #0f172a;
+    --card-bg: #111827;
+    --accent: #3b82f6;
+    --accent-soft: #1d4ed8;
+    --danger: #ef4444;
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --border: #1f2937;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background: #f2f2f2;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
     margin: 0;
-    padding: 20px;
+    padding: 16px;
+    color: var(--text-main);
+}
+
+/* GÓRNY PANEL */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .logo {
-    width: 180px;
-    display: block;
-    margin: 0 auto 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3b82f6, #22c55e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    color: white;
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
+.brand {
+    display: flex;
+    flex-direction: column;
 }
+
+.brand-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.brand-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.header-right a {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+/* KONTENER KOSZYKA */
+
+.cart-container {
+    background: var(--card-bg);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    padding: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+}
+
+/* NAGŁÓWEK KOSZYKA */
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cart-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cart-count {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* POZYCJE W KOSZYKU */
 
 .item {
-    background: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #1f2937;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.item-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: #020617;
+    border: 1px solid #1f2937;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.item-main {
+    flex: 1;
+}
+
+.item-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.item-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.item-right {
+    text-align: right;
+}
+
+.item-price {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.remove-btn {
+    margin-top: 4px;
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+/* PUSTY KOSZYK */
+
+.empty {
+    text-align: center;
+    padding: 26px 10px 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* PODSUMOWANIE */
+
+.summary {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #1f2937;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.item-name {
+.summary-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.summary-value {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-.item-price {
-    color: #444;
-    margin-top: 5px;
+/* PRZYCISK ZAMÓWIENIA */
+
+.actions {
+    margin-top: 12px;
 }
 
-.remove-btn {
-    background: #ff4d4d;
+.order-btn {
+    width: 100%;
+    background: var(--accent);
+    border-radius: 999px;
     border: none;
+    padding: 10px 0;
     color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(59,130,246,0.45);
 }
 
-.remove-btn:hover {
-    background: #e60000;
+.order-btn:active {
+    background: var(--accent-soft);
+    box-shadow: none;
 }
 
-.empty {
+/* LINK POWRÓT */
+
+.back-link {
+    margin-top: 10px;
     text-align: center;
-    font-size: 20px;
-    margin-top: 40px;
-    color: #666;
 }
 
-.total {
-    margin-top: 30px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
+.back-link a {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
 }
 </style>
 </head>
 <body>
 
-<img src="logo.png" class="logo">
+<div class="header">
+    <div class="logo-wrap">
+        <div class="logo">A</div>
+        <div class="brand">
+            <div class="brand-title">Drukarnia u Antka</div>
+            <div class="brand-sub">Koszyk zamówienia</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <a href="https://dlaelektroant-dot.github.io/DrukarniaUantka/">Strona główna</a>
+    </div>
+</div>
 
-<h1>Twój koszyk</h1>
+<div class="cart-container">
+    <div class="cart-header">
+        <div class="cart-title">Twój koszyk</div>
+        <div class="cart-count" id="cart-count">Ładowanie...</div>
+    </div>
 
-<div id="koszyk"></div>
-<div id="suma" class="total"></div>
+    <div id="koszyk"></div>
+
+    <div class="summary">
+        <div class="summary-label">Suma zamówienia</div>
+        <div class="summary-value" id="suma">0 zł</div>
+    </div>
+
+    <div class="actions">
+        <button class="order-btn" onclick="alert('Tu kiedyś będzie prawdziwe zamówienie 😎')">
+            Przejdź do zamówienia
+        </button>
+    </div>
+
+    <div class="back-link">
+        <a href="https://dlaelektroant-dot.github.io/DrukarniaUantka/">← Wróć do sklepu</a>
+    </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* ======== FIREBASE CONFIG ======== */
 const firebaseConfig = {
   apiKey: "AIzaSyCh1XEeQ_ph_CSYUAOqpn-xqsMOvs7dH18",
   authDomain: "drukarnia-u-antka.firebaseapp.com",
@@ -100,14 +291,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ======== UNIKALNY KOSZYK DLA KAŻDEGO UŻYTKOWNIKA ======== */
+// osobny koszyk dla każdego urządzenia
 let deviceId = localStorage.getItem("deviceId");
 if (!deviceId) {
     deviceId = "dev_" + Math.random().toString(36).substring(2);
     localStorage.setItem("deviceId", deviceId);
 }
-
-/* ======== FUNKCJE KOSZYKA ======== */
 
 async function pobierzKoszyk() {
     const ref = doc(db, "koszyki", deviceId);
@@ -131,10 +320,12 @@ async function wyswietlKoszyk() {
     const koszyk = await pobierzKoszyk();
     const div = document.getElementById("koszyk");
     const sumaDiv = document.getElementById("suma");
+    const countDiv = document.getElementById("cart-count");
 
-    if (koszyk.length === 0) {
-        div.innerHTML = `<div class="empty">Koszyk jest pusty</div>`;
-        sumaDiv.innerHTML = "";
+    if (!koszyk || koszyk.length === 0) {
+        div.innerHTML = `<div class="empty">Koszyk jest pusty. Dodaj coś ze sklepu 🙂</div>`;
+        sumaDiv.textContent = "0 zł";
+        countDiv.textContent = "0 pozycji";
         return;
     }
 
@@ -145,17 +336,24 @@ async function wyswietlKoszyk() {
             suma += p.cena;
             return `
                 <div class="item">
-                    <div>
-                        <div class="item-name">${p.nazwa}</div>
-                        <div class="item-price">${p.cena} zł</div>
+                    <div class="item-thumb">
+                        ${p.nazwa?.slice(0, 2) || "3D"}
                     </div>
-                    <button class="remove-btn" onclick="usun(${i})">Usuń</button>
+                    <div class="item-main">
+                        <div class="item-name">${p.nazwa}</div>
+                        <div class="item-meta">Druk 3D • 1 szt.</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-price">${p.cena} zł</div>
+                        <button class="remove-btn" onclick="usun(${i})">Usuń</button>
+                    </div>
                 </div>
             `;
         })
         .join("");
 
-    sumaDiv.innerHTML = `Suma: ${suma} zł`;
+    sumaDiv.textContent = `${suma} zł`;
+    countDiv.textContent = `${koszyk.length} pozycji`;
 }
 
 wyswietlKoszyk();
